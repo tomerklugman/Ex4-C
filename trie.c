@@ -4,95 +4,110 @@
 #include <ctype.h>
 #include "trie.h"
 
-node* createnode(){ // allocate new trie node and set it to null
-	node* mynode;
-	mynode=(node*)malloc(sizeof(node));
-	mynode->isendword=FALSE;
+// Allocate new trie node and set it to null
+node* createnode()
+{ 
+	//node* mynode;
+	node* mynode = (node*)malloc(sizeof(node));
+	mynode->isendword = FALSE;
 	int i=0;
-	while(i<NUM_LETTERS) {
-		mynode->children[i]=NULL;
+	
+	while(i<NUM_LETTERS) 
+	{
+		mynode->children[i] = NULL;
 		i++;	
 	}
+	
 	return mynode;
 }
 
-node *freetrie(node *root){	// free node memory allocation
-	for(int i=0;i<NUM_LETTERS;i++){
-		if(root->children[i]!=NULL){
+// Free node memory allocation
+node *freetrie(node *root)
+{	
+	for(int i=0;i < NUM_LETTERS;i++)
+		if(root->children[i] != NULL)
 			freetrie(root->children[i]);
-		}
-	}
+		
 	free(root);
 	return NULL;
 }
 
-void makesmallandremovespecial(char *str){ // makes big chars to small and removes special chars
-	int nextword=0;
-	int size=strlen(str);
-	char *words=(char*)malloc(strlen(str));
-	for(int i=0;i<size;i++){
-		if(!isalpha(str[i])){
+// Makes big chars to small and removes special chars
+void makesmallandremovespecial(char *str)
+{ 
+	int nextword = 0;
+	int size = strlen(str);
+	char *words = (char*)malloc(strlen(str));
+	
+	for(int i=0;i<size;i++)
+	{
+		if(!isalpha(str[i]))
 			continue;
-		}
-		*(words+nextword)=tolower(str[i]);
+		
+		*(words+nextword) = tolower(str[i]);
 		nextword++;
 	}
-	words[nextword]=0;
+	
+	words[nextword] = 0;
 	strcpy(str,words);
     free(words);
 }
 
-void insert(node* root,char* word) { // inserts new word chars and adds count to each node
+// Inserts new word chars and adds count to each node
+void insert(node* root,char* word)
+{ 
 	makesmallandremovespecial(word);
-	node* temp=root;	
-	for(int i=0;i<strlen(word);i++) {
-		if(temp->children[word[i]-97]==NULL) {
-			temp->children[word[i]-97]=createnode();
-			temp=temp->children[word[i]-97];
-			temp->letter=word[i];								
-		
-		}else{
-			temp=temp->children[word[i]-97];			
+	node* temp = root;
+	
+	for(int i=0;i<strlen(word);i++)
+	{
+		if(temp->children[word[i]-A_VALUE] == NULL)
+		{
+			temp->children[word[i]-A_VALUE] = createnode();
+			temp = temp->children[word[i]-A_VALUE];
+			temp->letter = word[i];								
 		}
-
-	}	
+		else
+			temp = temp->children[word[i]-A_VALUE];			
+	}
+	
 	temp->count++;
-	temp->isword=TRUE;		
+	temp->isword = TRUE;		
 }
 
-void printTraverse(node* node, char* word,int rank){
-              if(node==NULL){
-                return;
-           }
-	if(rank<=strlen(word)){
+// Prints the desired way.
+void printTraverse(node* node, char* word,int rank)
+{
+    if(node == NULL)
+		return;
+	
+	if(rank <= strlen(word))
 		word[rank-1]=0;
-              }
+	
 	strncat(word,&node->letter,1);
-	if(node->isword==TRUE) {
+	if(node->isword==TRUE) 
 		printf("%s\t%ld\n",word,node->count);		
-	}	
-	for(int i=0;i<NUM_LETTERS;i++) {		
-		if(node->children[i]!=NULL) {
-		printTraverse(node->children[i],word,rank+1);
-		}
-	}
+	
+	for(int i=0;i<NUM_LETTERS;i++) 		
+		if(node->children[i] != NULL) 
+			printTraverse(node->children[i],word,rank+1);
 }
 
-void printreverse(node* node, char* word, int rank){
-               if(node==NULL){
-                return;
-                }
-	if(rank<=strlen(word)) {
+// Prints the reverse of the desired way.
+void printreverse(node* node, char* word, int rank)
+{
+    if(node==NULL)
+		return;
+
+	if(rank<=strlen(word)) 
 		word[rank-1]=0;
-	}
+
 	strncat(word,&node->letter,1);
-	if(node->isword==TRUE) {
+	if(node->isword==TRUE) 
 		printf("%s\t%ld\n",word,node->count);
-	}
-	for(int i=NUM_LETTERS-1;i>=0;i--) {
-		if(node->children[i]!=NULL) {
+	
+	for(int i=NUM_LETTERS-1;i>=0;i--) 
+		if(node->children[i]!=NULL) 
 			printreverse(node->children[i],word,rank+1);
-		}
-	}
 }
 

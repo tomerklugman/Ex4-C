@@ -2,13 +2,16 @@
 #define _TRIE_H
 
 #define NUM_LETTERS ((int)26)
+#define A_VALUE 97
 
-typedef enum {
+typedef enum 
+{
 	FALSE = 0,
 	TRUE = 1
 } boolean;
 
-typedef struct node {
+typedef struct node 
+{
 	char letter;
 	long unsigned int count;
 	struct node* children[NUM_LETTERS];
